@@ -1,11 +1,11 @@
 package ru.gb.xlsxreader.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import ru.gb.xlsxreader.model.Category;
+import ru.gb.xlsxreader.model.Manufacturer;
 
 import java.util.Optional;
 
-public interface CategoryRepository extends JpaRepository<Category, long> {
+public interface ManufacturerRepository extends JpaRepository<Manufacturer, Long> {
 
-    Optional<Category> findByTitle(String title);
+    Optional<Manufacturer> findByTitle(String title);
 }

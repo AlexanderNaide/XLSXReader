@@ -1,7 +1,9 @@
-package ru.gb.model;
+package ru.gb.xlsxreader.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 @Entity
@@ -14,4 +16,7 @@ public class Manufacturer {
 
     @Column(unique = true, nullable = false)
     private String title;
+
+    @OneToMany (mappedBy = "manufacturer")
+    private List<Product> productList;
 }

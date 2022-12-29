@@ -1,4 +1,4 @@
-package ru.gb.model;
+package ru.gb.xlsxreader.model;
 
 
 import jakarta.persistence.*;
@@ -16,20 +16,20 @@ public class Product {
     private Long id;
 
     @ManyToOne
-    @Column(name = "category", nullable = false)
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
     @ManyToOne
-    @Column(name = "sub_category_1", nullable = false)
+    @JoinColumn(name = "sub_category_1_id", nullable = false)
     private SubCategory1 subCategory1;
 
     @ManyToOne
-    @Column(name = "sub_category_2")
-    private SubCategory1 subCategory2;
+    @JoinColumn(name = "sub_category_2_id")
+    private SubCategory2 subCategory2;
 
     @ManyToOne
-    @Column(name = "sub_category_3")
-    private SubCategory1 subCategory3;
+    @JoinColumn(name = "sub_category_3_id")
+    private SubCategory3 subCategory3;
 
     @Column(name = "art", nullable = false)
     private Long article;
@@ -55,26 +55,26 @@ public class Product {
     @Column(name = "count")
     private Integer count;
 
-    @Column(name = "description", length = 800)
+    @Column(name = "description", length = 1200)
     private String description;
 
     @Column(name = "short_description")
     private String shortDescription;
 
     @ManyToOne
-    @Column(name = "manufacturer")
+    @JoinColumn(name = "manufacturer_id")
     private Manufacturer manufacturer;
 
     @Column(name = "weight")
     private Double weight;
 
-    @Column(name = "images", length = 800)
+    @Column(name = "images", length = 2000)
     private String images;
 
-    @Column(name = "images_linc", length = 1200)
+    @Column(name = "images_linc", length = 2000)
     private String imagesLinc;
 
-    @Column(name = "specifications", length = 2000)
+    @Column(name = "specifications", length = 3000)
     private String specifications;
 
 

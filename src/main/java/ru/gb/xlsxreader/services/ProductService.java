@@ -2,25 +2,25 @@ package ru.gb.xlsxreader.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.gb.xlsxreader.model.Category;
-import ru.gb.xlsxreader.repository.CategoryRepository;
+import ru.gb.xlsxreader.model.Product;
+import ru.gb.xlsxreader.repository.ProductRepository;
 
 import java.util.Optional;
 
 @Service
-public class CategoryService {
-    private CategoryRepository categoryRepository;
+public class ProductService {
+    private ProductRepository productRepository;
 
     @Autowired
-    public void setCategoryRepository(CategoryRepository categoryRepository) {
-        this.categoryRepository = categoryRepository;
+    public void setCategoryRepository(ProductRepository productRepository) {
+        this.productRepository = productRepository;
     }
 
-    public Optional<Category> findCatByName(String title){
-        return categoryRepository.findByTitle(title);
+    public Optional<Product> findProdByName(String title){
+        return productRepository.findByTitle(title);
     }
 
-    public void addCat(Category category){
-        categoryRepository.save(category);
+    public void addProd(Product product){
+        productRepository.save(product);
     }
 }
