@@ -1,4 +1,4 @@
-package ru.gb.xlsxreader.repository;
+package NoSource;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import ru.gb.xlsxreader.model.SubCategory2;

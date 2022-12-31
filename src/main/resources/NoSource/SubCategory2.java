@@ -1,4 +1,4 @@
-package ru.gb.xlsxreader.model;
+package NoSource;
 
 import jakarta.persistence.*;
 import lombok.Data;

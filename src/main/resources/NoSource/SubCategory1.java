@@ -1,4 +1,4 @@
-package ru.gb.xlsxreader.model;
+package NoSource;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -7,8 +7,8 @@ import java.util.List;
 
 @Data
 @Entity
-@Table(name = "category")
-public class Category {
+@Table(name = "sub_category_1")
+public class SubCategory1{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,6 +17,6 @@ public class Category {
     @Column(unique = true, nullable = false)
     private String title;
 
-    @OneToMany (mappedBy = "category")
+    @OneToMany (mappedBy = "subCategory1")
     private List<Product> productList;
 }

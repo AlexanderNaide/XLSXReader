@@ -21,27 +21,29 @@ import java.util.Optional;
 
 @Component
 public class ReaderController {
-    private final CategoryService categoryService;
-    private final ManufacturerService manufacturerService;
     private final ProductService productService;
-    private final SubCategory1Service subCategory1Service;
-    private final SubCategory2Service subCategory2Service;
-    private final SubCategory3Service subCategory3Service;
 
     @Autowired
+    public ReaderController(ProductService productService) {
+        this.productService = productService;
+    }
+
+/*    @Autowired
     public ReaderController(CategoryService categoryService,
                             ManufacturerService manufacturerService,
                             ProductService productService,
                             SubCategory1Service subCategory1Service,
                             SubCategory2Service subCategory2Service,
-                            SubCategory3Service subCategory3Service) {
+                            SubCategory3Service subCategory3Service,
+                            ProductDataService productDataService) {
         this.categoryService = categoryService;
         this.manufacturerService = manufacturerService;
         this.productService = productService;
         this.subCategory1Service = subCategory1Service;
         this.subCategory2Service = subCategory2Service;
         this.subCategory3Service = subCategory3Service;
-    }
+        this.productDataService = productDataService;
+    }*/
 
     @EventListener(ApplicationReadyEvent.class)
     public void generateDataOnStartup() throws IOException {
@@ -64,6 +66,67 @@ public class ReaderController {
 
     public void writeRow(Row row){
         Product product = new Product();
+
+        Cell cat = row.getCell(0);
+        product.setCategory(cat.getStringCellValue());
+
+
+        Cell cat2 = row.getCell(1);
+        product.setSubCategory1(cat2.getStringCellValue());
+
+
+        Cell cat3 = row.getCell(2);
+        product.setSubCategory2(cat3.getStringCellValue());
+
+        Cell cat4 = row.getCell(3);
+        product.setSubCategory3(cat4.getStringCellValue());
+
+        Cell art = row.getCell(4);
+        String a = art.getStringCellValue();
+        if (!Objects.equals(a, "")){
+            product.setArticle(Long.parseLong(a));
+        }
+
+        Cell mod = row.getCell(5);
+        product.setModification(mod.getStringCellValue());
+
+        Cell tit = row.getCell(6);
+        product.setTitle(tit.getStringCellValue());
+
+
+        Cell price = row.getCell(8);
+        String p = price.getStringCellValue();
+        if (!Objects.equals(p, "")){
+            product.setPrice(Double.parseDouble(p.replace(",", ".")));
+        }
+
+        Cell oPrice = row.getCell(9);
+        String op = oPrice.getStringCellValue();
+        if (!Objects.equals(op, "")){
+            product.setOldPrice(Double.parseDouble(op.replace(",", ".")));
+        }
+
+        Cell pPrice = row.getCell(10);
+        String pp = pPrice.getStringCellValue();
+        if (!Objects.equals(pp, "")){
+            product.setPurchasePrice(Double.parseDouble(pp.replace(",", ".")));
+        }
+
+        Cell count = row.getCell(11);
+        product.setCount(Integer.parseInt(count.getStringCellValue()));
+
+        Cell desc = row.getCell(12);
+        product.setDescription(desc.getStringCellValue());
+
+        Cell man = row.getCell(14);
+        product.setManufacturer(man.getStringCellValue());
+
+        productService.addProd(product);
+    }
+
+/*    public void writeRowOld(Row row){
+        Product product = new Product();
+        ProductData data = new ProductData();
 
         Cell cat = row.getCell(0);
         String title = cat.getStringCellValue();
@@ -131,8 +194,6 @@ public class ReaderController {
         Cell tit = row.getCell(6);
         product.setTitle(tit.getStringCellValue());
 
-        Cell path = row.getCell(7);
-        product.setPath(path.getStringCellValue());
 
         Cell price = row.getCell(8);
         String p = price.getStringCellValue();
@@ -155,12 +216,6 @@ public class ReaderController {
         Cell count = row.getCell(11);
         product.setCount(Integer.parseInt(count.getStringCellValue()));
 
-        Cell desc = row.getCell(12);
-        product.setDescription(desc.getStringCellValue());
-
-        Cell sdesc = row.getCell(13);
-        product.setShortDescription(sdesc.getStringCellValue());
-
         Cell man = row.getCell(14);
         String manTitle = man.getStringCellValue();
         Optional<Manufacturer> optionalManufacturer = manufacturerService.findManByName(manTitle);
@@ -180,17 +235,41 @@ public class ReaderController {
             product.setWeight(Double.parseDouble(w.replace(",", ".")));
         }
 
+        product = productService.addProd(product);
+
+        Cell path = row.getCell(7);
+//        product.setPath(path.getStringCellValue());
+        data.setPath(path.getStringCellValue());
+
+        Cell desc = row.getCell(12);
+//        product.setDescription(desc.getStringCellValue());
+        data.setDescription(desc.getStringCellValue());
+
+        Cell sdesc = row.getCell(13);
+//        product.setShortDescription(sdesc.getStringCellValue());
+        data.setShortDescription(sdesc.getStringCellValue());
+
         Cell img = row.getCell(19);
-        product.setImages(img.getStringCellValue());
+//        product.setImages(img.getStringCellValue());
+        data.setImages(img.getStringCellValue());
 
         Cell imgl = row.getCell(20);
-        product.setImagesLinc(imgl.getStringCellValue());
+//        product.setImagesLinc(imgl.getStringCellValue());
+        data.setImagesLinc(imgl.getStringCellValue());
 
         Cell spec = row.getCell(21);
-        product.setSpecifications(spec.getStringCellValue());
+//        product.setSpecifications(spec.getStringCellValue());
+        data.setSpecifications(spec.getStringCellValue());
+
+        data.setProduct(product);
+        data = productDataService.addData(data);
+
+        product.setData(data);
 
         productService.addProd(product);
-    }
+
+
+    }*/
 
     public void readRow(Row row){
         Cell cat = row.getCell(0);
