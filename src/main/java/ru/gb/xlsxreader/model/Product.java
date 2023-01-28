@@ -1,37 +1,41 @@
 package ru.gb.xlsxreader.model;
 
-
 import jakarta.persistence.*;
+import jdk.jfr.Unsigned;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
-@Data
 @Entity
+@Data
 @Table(name = "products")
+@NoArgsConstructor
 public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    @Unsigned
     private Long id;
 
-    @Column(name = "category", nullable = false)
-    private String category;
-
-    @Column(name = "sub_category_1", nullable = false)
-    private String subCategory1;
-
-    @Column(name = "sub_category_2")
-    private String subCategory2;
-
-    @Column(name = "sub_category_3")
-    private String subCategory3;
-
-    @Column(name = "art", nullable = false)
-    private Long article;
+    @Column(name = "article", nullable = false, unique = true)
+    private String article;
 
     @Column(name = "modification")
     private String modification;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    @Unsigned
+    private Categories categories;
+
+    @ManyToOne
+    @JoinColumn(name = "manufacturer_id", nullable = false)
+    @Unsigned
+    private Manufacturer manufacturer;
 
     @Column(name = "title")
     private String title;
@@ -39,19 +43,35 @@ public class Product {
     @Column(name = "price")
     private Double price;
 
-    @Column(name = "old_price")
-    private Double oldPrice;
-
     @Column(name = "purchase_price")
     private Double purchasePrice;
+
+    @Column(name = "old_price")
+    private Double oldPrice;
 
     @Column(name = "count")
     private Integer count;
 
-    @Column(name = "manufacturer")
-    private String manufacturer;
-
     @Column(name = "description", length = 1200)
     private String description;
 
+    @Column(name = "path")
+    private String path;
+
+    @Column(name = "images_title", length = 2000)
+    private String imagesTitle;
+
+    @Column(name = "images_linc", length = 2000)
+    private String imagesLinc;
+
+    @Column(name = "specifications", length = 3000)
+    private String specifications;
+
+    @Column(name = "created_at")
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 }

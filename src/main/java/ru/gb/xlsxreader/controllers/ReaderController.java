@@ -1,5 +1,6 @@
 package ru.gb.xlsxreader.controllers;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -15,35 +16,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Component
+@RequiredArgsConstructor
 public class ReaderController {
     private final ProductService productService;
-
-    @Autowired
-    public ReaderController(ProductService productService) {
-        this.productService = productService;
-    }
-
-/*    @Autowired
-    public ReaderController(CategoryService categoryService,
-                            ManufacturerService manufacturerService,
-                            ProductService productService,
-                            SubCategory1Service subCategory1Service,
-                            SubCategory2Service subCategory2Service,
-                            SubCategory3Service subCategory3Service,
-                            ProductDataService productDataService) {
-        this.categoryService = categoryService;
-        this.manufacturerService = manufacturerService;
-        this.productService = productService;
-        this.subCategory1Service = subCategory1Service;
-        this.subCategory2Service = subCategory2Service;
-        this.subCategory3Service = subCategory3Service;
-        this.productDataService = productDataService;
-    }*/
+    private final ManufacturerService manufacturerService;
+    private final CategoryService categoryService;
 
     @EventListener(ApplicationReadyEvent.class)
     public void generateDataOnStartup() throws IOException {
@@ -61,30 +41,149 @@ public class ReaderController {
             writeRow(row);
             row = rowIterator.next();
         }
+
+        System.out.println("F I N I S H !!!");
     }
 
 
     public void writeRow(Row row){
         Product product = new Product();
+        Categories categories0 = null;
+        Categories categories1 = null;
+        Categories categories2 = null;
+        Categories categories3 = null;
+        Manufacturer manufacturer;
 
-        Cell cat = row.getCell(0);
-        product.setCategory(cat.getStringCellValue());
+        Cell cat0 = row.getCell(0);
+        String title0 = cat0.getStringCellValue();
+        Optional<Categories> optionalCategory0 = categoryService.findCatByName(title0);
+        if(optionalCategory0.isEmpty()){
+            categories0 = new Categories();
+            categories0.setTitle(title0);
+            categories0 = categoryService.addCat(categories0);
+        } else {
+            categories0 = optionalCategory0.get();
+        }
 
 
-        Cell cat2 = row.getCell(1);
-        product.setSubCategory1(cat2.getStringCellValue());
+        Cell cat1 = row.getCell(1);
+        String title1 = cat1.getStringCellValue();
+        Optional<Categories> optionalSubCategory1 = categoryService.findCatByName(title1);
+        if(optionalSubCategory1.isEmpty()){
+            categories1 = new Categories();
+            categories1.setTitle(title1);
+            categories1.setCategories(categories0);
+            categories1 = categoryService.addCat(categories1);
+
+            if (categories0.getCategoriesList() == null){
+                categories0.setCategoriesList(new ArrayList<>());
+            }
+            categories0.getCategoriesList().add(categories1);
+        } else {
+            Categories test = optionalSubCategory1.get();
+            if (!test.getCategories().equals(categories0)){
+                categories1 = new Categories();
+                categories1.setTitle(title1);
+                categories1.setCategories(categories0);
+                categories1 = categoryService.addCat(categories1);
+                if (categories0.getCategoriesList() == null){
+                    categories0.setCategoriesList(new ArrayList<>());
+                }
+                categories0.getCategoriesList().add(categories1);
+            } else {
+                categories1 = test;
+            }
+        }
 
 
-        Cell cat3 = row.getCell(2);
-        product.setSubCategory2(cat3.getStringCellValue());
+        Cell cat2 = row.getCell(2);
+        String title2 = cat2.getStringCellValue();
+        if (Objects.equals(title2, "")){
+            product.setCategories(categories1);
+            if (categories1.getProductList() == null){
+                categories1.setProductList(new ArrayList<>());
+            }
+            categories1.getProductList().add(product);
+        } else {
+            Optional<Categories> optionalSubCategory2 = categoryService.findCatByName(title2);
+            if(optionalSubCategory2.isEmpty()){
+                categories2 = new Categories();
+                categories2.setTitle(title2);
+                categories2.setCategories(categories1);
+                categories2 = categoryService.addCat(categories2);
+                if (categories1.getCategoriesList() == null){
+                    categories1.setCategoriesList(new ArrayList<>());
+                }
+                categories1.getCategoriesList().add(categories2);
+            } else {
+                Categories test = optionalSubCategory2.get();
+                if (!test.getCategories().equals(categories1)){
+                    categories2 = new Categories();
+                    categories2.setTitle(title2);
+                    categories2.setCategories(categories1);
+                    categories2 = categoryService.addCat(categories2);
+                    if (categories1.getCategoriesList() == null){
+                        categories1.setCategoriesList(new ArrayList<>());
+                    }
+                    categories1.getCategoriesList().add(categories2);
+                } else {
+                    categories2 = test;
+                }
+            }
+        }
+
 
         Cell cat4 = row.getCell(3);
-        product.setSubCategory3(cat4.getStringCellValue());
+        String title3 = cat4.getStringCellValue();
+        if (categories2 != null){
+            if (Objects.equals(title3, "")){
+                product.setCategories(categories2);
+                if (categories2.getProductList() == null){
+                    categories2.setProductList(new ArrayList<>());
+                }
+                categories2.getProductList().add(product);
+            } else {
+                Optional<Categories> optionalSubCategory3 = categoryService.findCatByName(title3);
+                if(optionalSubCategory3.isEmpty()){
+                    categories3 = new Categories();
+                    categories3.setTitle(title3);
+                    categories3.setCategories(categories2);
+                    categories3 = categoryService.addCat(categories3);
+                    if (categories2.getCategoriesList() == null){
+                        categories2.setCategoriesList(new ArrayList<>());
+                    }
+                    categories2.getCategoriesList().add(categories3);
+                } else {
+                    Categories test = optionalSubCategory3.get();
+                    if (!test.getCategories().equals(categories2)){
+                        categories3 = new Categories();
+                        categories3.setTitle(title3);
+                        categories3.setCategories(categories2);
+                        categories3 = categoryService.addCat(categories3);
+                        if (categories2.getCategoriesList() == null){
+                            categories2.setCategoriesList(new ArrayList<>());
+                        }
+                        categories2.getCategoriesList().add(categories3);
+                    } else {
+                        categories3 = test;
+                    }
+                }
+            }
+        }
+
+        if (categories3 != null){
+            product.setCategories(categories3);
+            if (categories3.getProductList() == null){
+                categories3.setProductList(new ArrayList<>());
+            }
+            categories3.getProductList().add(product);
+        }
+
 
         Cell art = row.getCell(4);
         String a = art.getStringCellValue();
         if (!Objects.equals(a, "")){
-            product.setArticle(Long.parseLong(a));
+            product.setArticle(a);
         }
 
         Cell mod = row.getCell(5);
@@ -119,9 +218,52 @@ public class ReaderController {
         product.setDescription(desc.getStringCellValue());
 
         Cell man = row.getCell(14);
-        product.setManufacturer(man.getStringCellValue());
+        String titleMan = man.getStringCellValue();
+        Optional<Manufacturer> optionalManufacturer = manufacturerService.findManByName(titleMan);
+        if(optionalManufacturer.isEmpty()){
+            manufacturer = new Manufacturer();
+            manufacturer.setTitle(titleMan);
+            manufacturer = manufacturerService.addMan(manufacturer);
+        } else {
+            manufacturer = optionalManufacturer.get();
+        }
+        if (manufacturer.getProductList() == null){
+            manufacturer.setProductList(new ArrayList<>());
+        }
+        manufacturer.getProductList().add(product);
+        product.setManufacturer(manufacturer);
 
+        Cell img = row.getCell(19);
+        String i = img.getStringCellValue();
+        if (!Objects.equals(i, "")){
+            product.setImagesTitle(i);
+        }
+
+        Cell imgl = row.getCell(20);
+        String il = imgl.getStringCellValue();
+        if (!Objects.equals(il, "")){
+            product.setImagesLinc(il);
+        }
+
+        Cell spec = row.getCell(21);
+        String sp = spec.getStringCellValue();
+        if (!Objects.equals(sp, "")){
+            product.setSpecifications(sp);
+        }
+
+//        categoryService.addCat(categories0);
+//        categoryService.addCat(categories1);
+//        if(categories2 != null) {
+//            categoryService.addCat(categories2);
+//        }
+//        if(categories3 != null) {
+//            categoryService.addCat(categories3);
+//        }
         productService.addProd(product);
+        categoryService.flush();
+        manufacturerService.flush();
+        productService.flush();
+//        manufacturerService.addMan(manufacturer);
     }
 
 /*    public void writeRowOld(Row row){

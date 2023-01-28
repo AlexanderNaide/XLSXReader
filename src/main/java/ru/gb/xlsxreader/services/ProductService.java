@@ -21,7 +21,11 @@ public class ProductService {
     }
 
     public void addProd(Product product){
-        productRepository.save(product);
+        productRepository.saveAndFlush(product);
+    }
+
+    public void flush(){
+        productRepository.flush();
     }
 //
 //    public void save(Product product){

@@ -1,8 +1,9 @@
-package NoSource;
+package ru.gb.xlsxreader.services;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.gb.xlsxreader.model.Category;
+import ru.gb.xlsxreader.model.Categories;
 import ru.gb.xlsxreader.repository.CategoryRepository;
 
 import java.util.Optional;
@@ -16,11 +17,16 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    public Optional<Category> findCatByName(String title){
+//    @Transactional
+    public Optional<Categories> findCatByName(String title){
         return categoryRepository.findByTitle(title);
     }
 
-    public void addCat(Category category){
-//        categoryRepository.save(category);
+    public Categories addCat(Categories category){
+        return categoryRepository.saveAndFlush(category);
+    }
+
+    public void flush(){
+        categoryRepository.flush();
     }
 }

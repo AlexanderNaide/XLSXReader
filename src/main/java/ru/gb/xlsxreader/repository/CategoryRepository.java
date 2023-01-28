@@ -3,16 +3,19 @@ package ru.gb.xlsxreader.repository;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import ru.gb.xlsxreader.model.Product;
+import ru.gb.xlsxreader.model.Categories;
 
 import java.util.Optional;
 
 @Repository
-public interface ProductRepository extends JpaRepository<Product, Long> {
+public interface CategoryRepository extends JpaRepository<Categories, Long> {
 
     @Transactional
-    Optional<Product> findByTitle(String title);
+    Optional<Categories> findByTitle(String title);
 
     @Transactional
-    <S extends Product> S saveAndFlush(S entity);
+    Categories saveAndFlush(Categories categories);
+
+    @Override
+    void flush();
 }
