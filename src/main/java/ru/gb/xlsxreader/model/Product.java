@@ -21,7 +21,7 @@ public class Product {
     @Unsigned
     private Long id;
 
-    @Column(name = "article", nullable = false, unique = true)
+    @Column(name = "article", nullable = false)
     private String article;
 
     @Column(name = "modification")
