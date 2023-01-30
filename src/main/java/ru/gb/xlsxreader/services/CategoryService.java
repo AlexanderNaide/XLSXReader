@@ -1,9 +1,8 @@
 package ru.gb.xlsxreader.services;
 
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.gb.xlsxreader.model.Categories;
+import ru.gb.xlsxreader.model.Category;
 import ru.gb.xlsxreader.repository.CategoryRepository;
 
 import java.util.List;
@@ -18,29 +17,29 @@ public class CategoryService {
     public void setCategoryRepository(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
     }
-    public Categories findByTitle(String title){
-        Optional<Categories> opt = categoryRepository.findFirstByTitle(title);
+    public Category findByTitle(String title){
+        Optional<Category> opt = categoryRepository.findFirstByTitle(title);
         return opt.orElse(null);
     }
 
-    public List<Categories> findAllByTitle(String title){
+    public List<Category> findAllByTitle(String title){
         return categoryRepository.findAllByTitle(title);
     }
 
 //    @Transactional
-    public Categories addCat(Categories category){
+    public Category addCat(Category category){
         return categoryRepository.saveAndFlush(category);
     }
 
 //    @Transactional
-    public Categories findById(Long id){
+    public Category findById(Long id){
 //        return categoryRepository.findById(id).orElse(null);
 //        List<Categories> list = categoryRepository.mainFindCatById(id);
         System.out.println("Запрос категории с id " + id);
-        List<Optional<Categories>> list = categoryRepository.mainFindCatById(3L);
+        List<Optional<Category>> list = categoryRepository.mainFindCatById(3L);
 //        Optional<Categories> list = categoryRepository.mainFindCatById(3L);
 //        Categories categories = categoryRepository.mainFindCatById(id).stream().findFirst().orElse(null);
-        for (Optional<Categories> categories : list) {
+        for (Optional<Category> categories : list) {
             categories.ifPresent(value -> System.out.println("Получено: " + value.getTitle()));
 
         }
@@ -55,7 +54,7 @@ public class CategoryService {
 
 
 
-    public List<Categories> getCatList(Long id){
+    public List<Category> getCatList(Long id){
         return categoryRepository.getCatList(id);
     }
 }

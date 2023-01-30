@@ -7,14 +7,13 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Data
 @Table(name = "categories")
 @NoArgsConstructor
-public class Categories {
+public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +24,7 @@ public class Categories {
     @ManyToOne
     @JoinColumn(name = "parent_id")
     @Unsigned
-    private Categories categories;
+    private Category parentCategory;
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -38,11 +37,11 @@ public class Categories {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "categories")
-    private List<Categories> categoriesList;
+    @OneToMany(mappedBy = "parentCategory")
+    private List<Category> categoriesList;
 
-    @OneToMany(mappedBy = "categories")
-    private List<Product> productList;
+    @OneToMany(mappedBy = "category")
+    private List<Product> productsList;
 
 //    public List<Categories> getCategoriesList() {
 //        if (categoriesList.isEmpty()){

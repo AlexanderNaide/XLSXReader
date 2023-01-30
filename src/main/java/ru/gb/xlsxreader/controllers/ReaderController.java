@@ -5,7 +5,6 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -14,7 +13,6 @@ import ru.gb.xlsxreader.services.*;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 
@@ -29,231 +27,182 @@ public class ReaderController {
     public void generateDataOnStartup() throws IOException {
 
         FileInputStream fis = new FileInputStream(new File("C:\\pr\\Инструмент.xlsx"));
+//        FileInputStream fis = new FileInputStream(new File("C:\\pr\\Инструмент_test.xlsx"));
         XSSFWorkbook workbook = new XSSFWorkbook(fis);
         XSSFSheet sheet = workbook.getSheetAt(0);
         Iterator<Row> rowIterator = sheet.iterator();
         rowIterator.next();
 
+//        extracted();
+
+        Row row = rowIterator.next();
+//        readRow(row);
+
+        do {
+            writeRow(row);
+            row = rowIterator.next();
+        } while (rowIterator.hasNext());
+        writeRow(row);
+
+        System.out.println("F I N I S H !!!");
+    }
+
+    private void extracted() {
         Optional<Product> optionalProduct = productService.findProdByName("Пила Zubr ZPT-255-1800PL");
         Product product = null;
         if (optionalProduct.isPresent()){
             product = optionalProduct.get();
             System.out.println("Продукт: " + product.getTitle());
-            Categories categories = product.getCategories();
+            Category category = product.getCategory();
 //            Categories categories = categoryService.addCat(product.getCategories());
 //            Categories categories = categoryService.findById(product.getCategories().getId());
-            System.out.println("Категория: " + categories.getTitle());
-            Categories parentCategories = categories.getCategories();
+            System.out.println("Категория: " + category.getTitle());
+            Category parentCategory = category.getParentCategory();
 //            Categories parentCategories = categoryService.addCat(categories.getCategories());
 //            Categories parentCategories = categoryService.findById(categories.getCategories().getId());
-            System.out.println("Родительская категория: " + parentCategories.getTitle());
-            Categories firstCategories = parentCategories.getCategories();
+            System.out.println("Родительская категория: " + parentCategory.getTitle());
+            Category firstCategory = parentCategory.getParentCategory();
 //            Categories firstCategories = categoryService.findById(parentCategories.getCategories().getId());
-            System.out.println("Начальная категория: " + firstCategories.getTitle());
+            System.out.println("Начальная категория: " + firstCategory.getTitle());
             System.out.println();
             System.out.println();
             System.out.println();
             System.out.println("В категорию также включены:");
-            for (Categories categories1 : categoryService.getCatList(categories.getId())) {
-                System.out.println(categories1.getTitle());
-                System.out.println("У которой родительская категория: " + categories1.getCategories().getTitle());
+            for (Category category1 : categoryService.getCatList(category.getId())) {
+                System.out.println(category1.getTitle());
+                System.out.println("У которой родительская категория: " + category1.getParentCategory().getTitle());
             }
             System.out.println();
             System.out.println();
             System.out.println();
             System.out.println("В родительскую категорию также включены:");
-            for (Categories categories1 : categoryService.getCatList(parentCategories.getId())) {
-                System.out.println(categories1.getTitle());
-                System.out.println("У которой родительская категория: " + categories1.getCategories().getTitle());
+            for (Category category1 : categoryService.getCatList(parentCategory.getId())) {
+                System.out.println(category1.getTitle());
+                System.out.println("У которой родительская категория: " + category1.getParentCategory().getTitle());
             }
             System.out.println();
             System.out.println();
             System.out.println();
             System.out.println("В изначальную категорию также включены:");
-            for (Categories categories1 : categoryService.getCatList(firstCategories.getId())) {
-                System.out.println(categories1.getTitle());
-                System.out.println("У которой родительская категория: " + categories1.getCategories().getTitle());
+            for (Category category1 : categoryService.getCatList(firstCategory.getId())) {
+                System.out.println(category1.getTitle());
+                System.out.println("У которой родительская категория: " + category1.getParentCategory().getTitle());
             }
 
         }
-
-        Row row = rowIterator.next();
-//        readRow(row);
-
-//        do {
-//            writeRow(row);
-//            row = rowIterator.next();
-//        } while (rowIterator.hasNext());
-//        writeRow(row);
-
-        System.out.println("F I N I S H !!!");
     }
 
 
     public void writeRow(Row row){
         Product product = new Product();
-        Categories categories0 = null;
-        Categories categories1 = null;
-        Categories categories2 = null;
-        Categories categories3 = null;
+        Category category0 = null;
+        Category category1 = null;
+        Category category2 = null;
+        Category category3 = null;
         Manufacturer manufacturer;
 
         Cell cat0 = row.getCell(0);
         String title0 = cat0.getStringCellValue();
-        List<Categories> list0 = categoryService.findAllByTitle(title0);
+        List<Category> list0 = categoryService.findAllByTitle(title0);
         if (list0.size() == 0){
-            categories0 = new Categories();
-            categories0.setTitle(title0);
-//            categories0.setCategoriesList(new ArrayList<>());
-//            categories0.setProductList(new ArrayList<>());
-//            categories0 = categoryService.addCat(categories0);
+            category0 = new Category();
+            category0.setTitle(title0);
         } else {
-            for (Categories c : list0) {
-                if (categories0 == null){
-                    categories0 = c;
+            for (Category c : list0) {
+                if (category0 == null){
+                    category0 = c;
                 }
             }
         }
-
-//
-//        categories0 = categoryService.findByTitle(title0);
-//        if(categories0 == null){
-//            categories0 = new Categories();
-//            categories0.setTitle(title0);
-//            categories0 = categoryService.addCat(categories0);
-//        }
+        categoryService.addCat(category0);
 
 
         Cell cat1 = row.getCell(1);
         String title1 = cat1.getStringCellValue();
 
-        List<Categories> list1 = categoryService.findAllByTitle(title1);
+        List<Category> list1 = categoryService.findAllByTitle(title1);
         if (list1.size() == 0){
-            categories1 = new Categories();
-            categories1.setTitle(title1);
-//            categories1.setCategoriesList(new ArrayList<>());
-//            categories1.setProductList(new ArrayList<>());
-            categories1.setCategories(categories0);
-//            categories0.getCategoriesList().add(categories1);
-//            categories1 = categoryService.addCat(categories1);
+            category1 = new Category();
+            category1.setTitle(title1);
+            category1.setParentCategory(category0);
         } else {
-            for (Categories c : list1) {
-                if (categories1 == null && Objects.equals(c.getCategories().getId(), Objects.requireNonNull(categories0).getId())){
-                    categories1 = c;
-                } else {
-                    categories1 = new Categories();
-                    categories1.setTitle(title1);
-                    categories1.setCategoriesList(new ArrayList<>());
-                    categories1.setProductList(new ArrayList<>());
-                    categories1.setCategories(categories0);
-                    categories0.getCategoriesList().add(categories1);
-//                    categories1 = categoryService.addCat(categories1);
+            for (Category c : list1) {
+                if (c.getParentCategory().getId() == category0.getId()) {
+                    category1 = c;
+                    break;
                 }
             }
+            if(category1 == null){
+                category1 = new Category();
+                category1.setTitle(title1);
+                category1.setParentCategory(category0);
+            }
         }
+        categoryService.addCat(category1);
 
-
-//        categories1 = categoryService.findByTitle(title1);
-//        if(categories1 == null || !Objects.equals(categories1.getCategories().getId(), categories0.getId())){
-//            categories1 = new Categories();
-//            categories1.setTitle(title1);
-//            categories1.setCategories(categories0);
-//            categories1 = categoryService.addCat(categories1);
-//        }
 
 
         Cell cat2 = row.getCell(2);
         String title2 = cat2.getStringCellValue();
         if (Objects.equals(title2, "")){
-            product.setCategories(categories1);
-            categories1.getProductList().add(product);
+            product.setCategory(category1);
         } else {
-            List<Categories> list2 = categoryService.findAllByTitle(title2);
+            List<Category> list2 = categoryService.findAllByTitle(title2);
             if (list2.size() == 0){
-                categories2 = new Categories();
-                categories2.setTitle(title2);
-
-                categories2.setCategoriesList(new ArrayList<>());
-                categories2.setProductList(new ArrayList<>());
-                categories2.setCategories(categories1);
-                categories1.getCategoriesList().add(categories2);
-
-//                categories2 = categoryService.addCat(categories2);
+                category2 = new Category();
+                category2.setTitle(title2);
+                category2.setParentCategory(category1);
             } else {
-                for (Categories c : list2) {
-//                    if (categories2 == null && Objects.equals(c.getCategories().getId(), Objects.requireNonNull(categories1).getId())){
-                    if (categories2 == null && (c.getCategories().getId() == categories1.getId())){
-                        categories2 = c;
-                    } else {
-                        categories2 = new Categories();
-                        categories2.setTitle(title2);
-                        categories2.setCategoriesList(new ArrayList<>());
-                        categories2.setProductList(new ArrayList<>());
-                        categories2.setCategories(categories1);
-                        categories1.getCategoriesList().add(categories2);
-//                        categories2 = categoryService.addCat(categories2);
+                for (Category c : list2) {
+                    if (c.getParentCategory().getId() == category1.getId()){
+                        category2 = c;
+                        break;
                     }
                 }
+                if(category2 == null){
+                    category2 = new Category();
+                    category2.setTitle(title2);
+                    category2.setParentCategory(category1);
+                }
             }
-
-
-//            categories2 = categoryService.findByTitle(title2);
-//            if(categories2 == null || !Objects.equals(categories2.getCategories().getId(), categories1.getId())){
-//                categories2 = new Categories();
-//                categories2.setTitle(title2);
-//                categories2.setCategories(categories1);
-//                categories2 = categoryService.addCat(categories2);
-//            }
+        }
+        if (category2 != null){
+            categoryService.addCat(category2);
         }
 
 
         Cell cat4 = row.getCell(3);
         String title3 = cat4.getStringCellValue();
-        if (categories2 != null){
+        if (category2 != null){
             if (Objects.equals(title3, "")){
-                product.setCategories(categories2);
-                categories2.getProductList().add(product);
+                product.setCategory(category2);
             } else {
-
-                List<Categories> list3 = categoryService.findAllByTitle(title3);
+                List<Category> list3 = categoryService.findAllByTitle(title3);
                 if (list3.size() == 0){
-                    categories3 = new Categories();
-                    categories3.setTitle(title3);
-                    categories3.setCategoriesList(new ArrayList<>());
-                    categories3.setProductList(new ArrayList<>());
-                    categories3.setCategories(categories2);
-                    categories2.getCategoriesList().add(categories3);
-//                    categories3 = categoryService.addCat(categories3);
+                    category3 = new Category();
+                    category3.setTitle(title3);
+                    category3.setParentCategory(category2);
                 } else {
-                    for (Categories c : list3) {
-                        if (categories3 == null && Objects.equals(c.getCategories().getId(), Objects.requireNonNull(categories2).getId())){
-                            categories3 = c;
-                        } else {
-                            categories3 = new Categories();
-                            categories3.setTitle(title3);
-                            categories3.setCategoriesList(new ArrayList<>());
-                            categories3.setProductList(new ArrayList<>());
-                            categories3.setCategories(categories2);
-                            categories2.getCategoriesList().add(categories3);
-//                            categories3 = categoryService.addCat(categories3);
+                    for (Category c : list3) {
+                        if (c.getParentCategory().getId() == category2.getId()){
+                            category3 = c;
+                            break;
                         }
                     }
+                    if(category3 == null){
+                        category3 = new Category();
+                        category3.setTitle(title3);
+                        category3.setParentCategory(category2);
+                    }
                 }
-
-
-//                categories3 = categoryService.findByTitle(title3);
-//                if(categories3 == null || !Objects.equals(categories3.getCategories().getId(), categories2.getId())) {
-//                    categories3 = new Categories();
-//                    categories3.setTitle(title3);
-//                    categories3.setCategories(categories2);
-//                    categories3 = categoryService.addCat(categories3);
-//                }
+            }
+            if (category3 != null){
+                categoryService.addCat(category3);
             }
         }
 
-        if (categories3 != null){
-            product.setCategories(categories3);
-            categories3.getProductList().add(product);
+        if (category3 != null){
+            product.setCategory(category3);
         }
 
 
@@ -300,13 +249,10 @@ public class ReaderController {
         if(optionalManufacturer.isEmpty()){
             manufacturer = new Manufacturer();
             manufacturer.setTitle(titleMan);
-            manufacturer.setProductList(new ArrayList<>());
-//            manufacturer = manufacturerService.addMan(manufacturer);
         } else {
             manufacturer = optionalManufacturer.get();
         }
         product.setManufacturer(manufacturer);
-        manufacturer.getProductList().add(product);
 
         Cell img = row.getCell(19);
         String i = img.getStringCellValue();
@@ -326,33 +272,31 @@ public class ReaderController {
             product.setSpecifications(sp);
         }
 
-//        productService.addProd(product);
-//        categoryService.flush();
-//        manufacturerService.flush();
-//        productService.flush();
+        manufacturerService.addMan(manufacturer);
+        productService.addProd(product);
     }
 
     public void writeRowOld(Row row){
         Product product = new Product();
-        Categories categories0 = null;
-        Categories categories1 = null;
-        Categories categories2 = null;
-        Categories categories3 = null;
+        Category category0 = null;
+        Category category1 = null;
+        Category category2 = null;
+        Category category3 = null;
         Manufacturer manufacturer;
 
         Cell cat0 = row.getCell(0);
         String title0 = cat0.getStringCellValue();
-        List<Categories> list0 = categoryService.findAllByTitle(title0);
+        List<Category> list0 = categoryService.findAllByTitle(title0);
         if (list0.size() == 0){
-            categories0 = new Categories();
-            categories0.setTitle(title0);
-            categories0.setCategoriesList(new ArrayList<>());
-            categories0.setProductList(new ArrayList<>());
+            category0 = new Category();
+            category0.setTitle(title0);
+            category0.setCategoriesList(new ArrayList<>());
+            category0.setProductsList(new ArrayList<>());
 //            categories0 = categoryService.addCat(categories0);
         } else {
-            for (Categories c : list0) {
-                if (categories0 == null){
-                    categories0 = c;
+            for (Category c : list0) {
+                if (category0 == null){
+                    category0 = c;
                 }
             }
         }
@@ -369,26 +313,26 @@ public class ReaderController {
         Cell cat1 = row.getCell(1);
         String title1 = cat1.getStringCellValue();
 
-        List<Categories> list1 = categoryService.findAllByTitle(title1);
+        List<Category> list1 = categoryService.findAllByTitle(title1);
         if (list1.size() == 0){
-            categories1 = new Categories();
-            categories1.setTitle(title1);
-            categories1.setCategoriesList(new ArrayList<>());
-            categories1.setProductList(new ArrayList<>());
-            categories1.setCategories(categories0);
-            categories0.getCategoriesList().add(categories1);
+            category1 = new Category();
+            category1.setTitle(title1);
+            category1.setCategoriesList(new ArrayList<>());
+            category1.setProductsList(new ArrayList<>());
+            category1.setParentCategory(category0);
+            category0.getCategoriesList().add(category1);
 //            categories1 = categoryService.addCat(categories1);
         } else {
-            for (Categories c : list1) {
-                if (categories1 == null && Objects.equals(c.getCategories().getId(), Objects.requireNonNull(categories0).getId())){
-                    categories1 = c;
+            for (Category c : list1) {
+                if (category1 == null && Objects.equals(c.getParentCategory().getId(), Objects.requireNonNull(category0).getId())){
+                    category1 = c;
                 } else {
-                    categories1 = new Categories();
-                    categories1.setTitle(title1);
-                    categories1.setCategoriesList(new ArrayList<>());
-                    categories1.setProductList(new ArrayList<>());
-                    categories1.setCategories(categories0);
-                    categories0.getCategoriesList().add(categories1);
+                    category1 = new Category();
+                    category1.setTitle(title1);
+                    category1.setCategoriesList(new ArrayList<>());
+                    category1.setProductsList(new ArrayList<>());
+                    category1.setParentCategory(category0);
+                    category0.getCategoriesList().add(category1);
 //                    categories1 = categoryService.addCat(categories1);
                 }
             }
@@ -407,32 +351,32 @@ public class ReaderController {
         Cell cat2 = row.getCell(2);
         String title2 = cat2.getStringCellValue();
         if (Objects.equals(title2, "")){
-            product.setCategories(categories1);
-            categories1.getProductList().add(product);
+            product.setCategory(category1);
+            category1.getProductsList().add(product);
         } else {
-            List<Categories> list2 = categoryService.findAllByTitle(title2);
+            List<Category> list2 = categoryService.findAllByTitle(title2);
             if (list2.size() == 0){
-                categories2 = new Categories();
-                categories2.setTitle(title2);
+                category2 = new Category();
+                category2.setTitle(title2);
 
-                categories2.setCategoriesList(new ArrayList<>());
-                categories2.setProductList(new ArrayList<>());
-                categories2.setCategories(categories1);
-                categories1.getCategoriesList().add(categories2);
+                category2.setCategoriesList(new ArrayList<>());
+                category2.setProductsList(new ArrayList<>());
+                category2.setParentCategory(category1);
+                category1.getCategoriesList().add(category2);
 
 //                categories2 = categoryService.addCat(categories2);
             } else {
-                for (Categories c : list2) {
+                for (Category c : list2) {
 //                    if (categories2 == null && Objects.equals(c.getCategories().getId(), Objects.requireNonNull(categories1).getId())){
-                    if (categories2 == null && (c.getCategories().getId() == categories1.getId())){
-                        categories2 = c;
+                    if (category2 == null && (c.getParentCategory().getId() == category1.getId())){
+                        category2 = c;
                     } else {
-                        categories2 = new Categories();
-                        categories2.setTitle(title2);
-                        categories2.setCategoriesList(new ArrayList<>());
-                        categories2.setProductList(new ArrayList<>());
-                        categories2.setCategories(categories1);
-                        categories1.getCategoriesList().add(categories2);
+                        category2 = new Category();
+                        category2.setTitle(title2);
+                        category2.setCategoriesList(new ArrayList<>());
+                        category2.setProductsList(new ArrayList<>());
+                        category2.setParentCategory(category1);
+                        category1.getCategoriesList().add(category2);
 //                        categories2 = categoryService.addCat(categories2);
                     }
                 }
@@ -451,32 +395,32 @@ public class ReaderController {
 
         Cell cat4 = row.getCell(3);
         String title3 = cat4.getStringCellValue();
-        if (categories2 != null){
+        if (category2 != null){
             if (Objects.equals(title3, "")){
-                product.setCategories(categories2);
-                categories2.getProductList().add(product);
+                product.setCategory(category2);
+                category2.getProductsList().add(product);
             } else {
 
-                List<Categories> list3 = categoryService.findAllByTitle(title3);
+                List<Category> list3 = categoryService.findAllByTitle(title3);
                 if (list3.size() == 0){
-                    categories3 = new Categories();
-                    categories3.setTitle(title3);
-                    categories3.setCategoriesList(new ArrayList<>());
-                    categories3.setProductList(new ArrayList<>());
-                    categories3.setCategories(categories2);
-                    categories2.getCategoriesList().add(categories3);
+                    category3 = new Category();
+                    category3.setTitle(title3);
+                    category3.setCategoriesList(new ArrayList<>());
+                    category3.setProductsList(new ArrayList<>());
+                    category3.setParentCategory(category2);
+                    category2.getCategoriesList().add(category3);
 //                    categories3 = categoryService.addCat(categories3);
                 } else {
-                    for (Categories c : list3) {
-                        if (categories3 == null && Objects.equals(c.getCategories().getId(), Objects.requireNonNull(categories2).getId())){
-                            categories3 = c;
+                    for (Category c : list3) {
+                        if (category3 == null && Objects.equals(c.getParentCategory().getId(), Objects.requireNonNull(category2).getId())){
+                            category3 = c;
                         } else {
-                            categories3 = new Categories();
-                            categories3.setTitle(title3);
-                            categories3.setCategoriesList(new ArrayList<>());
-                            categories3.setProductList(new ArrayList<>());
-                            categories3.setCategories(categories2);
-                            categories2.getCategoriesList().add(categories3);
+                            category3 = new Category();
+                            category3.setTitle(title3);
+                            category3.setCategoriesList(new ArrayList<>());
+                            category3.setProductsList(new ArrayList<>());
+                            category3.setParentCategory(category2);
+                            category2.getCategoriesList().add(category3);
 //                            categories3 = categoryService.addCat(categories3);
                         }
                     }
@@ -493,9 +437,9 @@ public class ReaderController {
             }
         }
 
-        if (categories3 != null){
-            product.setCategories(categories3);
-            categories3.getProductList().add(product);
+        if (category3 != null){
+            product.setCategory(category3);
+            category3.getProductsList().add(product);
         }
 
 

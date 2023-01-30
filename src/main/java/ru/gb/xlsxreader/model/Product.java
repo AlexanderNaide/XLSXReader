@@ -30,7 +30,7 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
     @Unsigned
-    private Categories categories;
+    private Category category;
 
     @ManyToOne
     @JoinColumn(name = "manufacturer_id", nullable = false)

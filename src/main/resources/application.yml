@@ -3,8 +3,8 @@ spring:
 #    url: jdbc:mysql://localhost:3306/products_database_opt?createDatabaseIfNotExist=true
     url: jdbc:mysql://localhost:3306/dump_web_market_db?createDatabaseIfNotExist=true
     username: root
-#    password: 6830
-    password: 312808895
+    password: 6830
+#    password: 312808895
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
